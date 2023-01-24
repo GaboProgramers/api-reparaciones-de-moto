@@ -1,3 +1,5 @@
+const Repair = require("../models/repair.model");
+
 // ? Funcion para Realizar una peticion GET
 exports.findRepairs = (req, res) => {
     console.log(req.body);
@@ -8,19 +10,17 @@ exports.findRepairs = (req, res) => {
 }
 
 // ? Funcion para Realizar una peticion POST
-exports.createRepairs = (req, res) => {
-    const { name, email, password, role } = req.body
-    console.log(req.body);
+exports.createRepairs = async (req, res) => {
+    const { date, userId } = req.body
+    const newRepair = await Repair.create({
+        date,
+        userId
+    })
 
     res.json({
         status: "succses",
         message: "Repairs - POST User - Controllers",
-        user: {
-            name,
-            email,
-            password,
-            role
-        }
+        newRepair,
     })
 }
 

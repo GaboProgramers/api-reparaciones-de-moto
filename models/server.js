@@ -6,20 +6,26 @@ const cors = require("cors")
 // ? nuestros archivos de rutas desde su origen en el documento.
 const { userRouter } = require("../routes/user.routes")
 const { repairsRouter } = require("../routes/repairs.routes")
+const { db } = require("../database/db")
 
 // ? Declaramos una clase llamada servidor,
 // ? la cual va a obtener toda la configuracion necesaria para levantar nuestro servidor..
 class Server {
     // ? 1er.  Paso : Se genera el constructor que sera el responsable de levantar el servidor.
     constructor() {
-        this.app = express() // ? igualamos nuestra app con express
-        this.port = process.env.PORT || 4000 // ? declaramos el puerto donde se ejecutara nuestro servidor.
+        // ? igualamos nuestra app con express
+        this.app = express()
+        // ? declaramos el puerto donde se ejecutara nuestro servidor.
+        this.port = process.env.PORT || 4000
 
         // ? Generamos los paths o rutas donde iremos almacenando la informacion de las peticiones.
         this.paths = {
             users: '/api/v1/users',
             repairs: '/api/v1/repairs'
         }
+
+        // ? llamada para el metodo de coneccion con la base de datos
+        this.database()
 
         // ? llamamos nuestros middlewares para que se ejecuten antes que las rutas.
         this.middlewares()
@@ -38,6 +44,17 @@ class Server {
     routes() {
         this.app.use(this.paths.users, userRouter)
         this.app.use(this.paths.repairs, repairsRouter)
+    }
+
+    // configuracion para la base de datos
+    database() {
+        db.authenticate()
+            .then(() => console.log('Database Autenticate'))
+            .catch(err => console.log(err))
+
+        db.sync() // tener en cuenta {force: true}
+            .then(() => console.log('base de datos sincronizada'))
+            .catch(err => console.log(err))
     }
 
     // ? Se genera el llamado a nuestro servidor.!
