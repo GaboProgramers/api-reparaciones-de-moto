@@ -7,6 +7,7 @@ const cors = require("cors")
 const { userRouter } = require("../routes/user.routes")
 const { repairsRouter } = require("../routes/repairs.routes")
 const { db } = require("../database/db")
+const morgan = require("morgan")
 
 // ? Declaramos una clase llamada servidor,
 // ? la cual va a obtener toda la configuracion necesaria para levantar nuestro servidor..
@@ -36,6 +37,9 @@ class Server {
 
     // ? colocamos los middlewares los cuales son configuraciones para muestro servidor
     middlewares() {
+        if (process.env.NODE_ENV === 'development') {
+            this.app.use(morgan('dev'))
+        }
         this.app.use(cors())
         this.app.use(express.json())
     }
@@ -49,12 +53,12 @@ class Server {
     // configuracion para la base de datos
     database() {
         db.authenticate()
-            .then(() => console.log('Database Autenticate'))
-            .catch(err => console.log(err))
+            .then(() => console.log('Database authenticated'))
+            .catch(error => console.log(error));
 
-        db.sync() // tener en cuenta {force: true}
-            .then(() => console.log('base de datos sincronizada'))
-            .catch(err => console.log(err))
+        db.sync()
+            .then(() => console.log('Database synced'))
+            .catch(error => console.log(error));
     }
 
     // ? Se genera el llamado a nuestro servidor.!

@@ -13,19 +13,20 @@ const Repair = db.define('repair', {
     },
 
     date: {
-        type: DataTypes.STRING,
+        type: DataTypes.DATE,
         allowNull: false,
-    },
-
-    status: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: true
     },
 
     userId: {
         type: DataTypes.INTEGER,
         allowNull: false
+    },
+
+    status: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: "pending",
+        enum: ['pending', 'complete', 'cancelled']
     }
 })
 

@@ -1,9 +1,6 @@
-// ? se usa para requerir los tipos de dato.
-const { DataTypes } = require("sequelize");
-// ? requerimiento de la base de datos.
-const { db } = require("../database/db");
+const { DataTypes } = require("sequelize")
+const { db } = require("../database/db")
 
-// ? definicion del modelo siempre empeiza con mayuscula.
 const User = db.define('user', {
     id: {
         primaryKey: true,
@@ -11,34 +8,32 @@ const User = db.define('user', {
         allowNull: false,
         type: DataTypes.INTEGER
     },
-
     name: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true
     },
-
     email: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
-
     password: {
         type: DataTypes.STRING,
         allowNull: false
     },
-
     role: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: 'user',
-        enum: ['user', 'admin']
+        defaultValue: 'client',
+        enum: ['client', 'employee']
     },
-
     status: {
-        type: DataTypes.BOOLEAN,
+        type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: true
+        defaultValue: 'available',
+        enum: ['avaliable', 'disable']
     }
-})
+});
 
-module.exports = User
+module.exports = User;
