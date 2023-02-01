@@ -8,6 +8,8 @@ const { userRouter } = require("../routes/user.routes")
 const { repairsRouter } = require("../routes/repairs.routes")
 const { db } = require("../database/db")
 const morgan = require("morgan")
+const globalErrorHandler = require("../controllers/error/error.controller")
+const AppError = require("../utils/appError")
 
 // ? Declaramos una clase llamada servidor,
 // ? la cual va a obtener toda la configuracion necesaria para levantar nuestro servidor..
@@ -48,6 +50,12 @@ class Server {
     routes() {
         this.app.use(this.paths.users, userRouter)
         this.app.use(this.paths.repairs, repairsRouter)
+
+        this.app.all('*', (req, res, next) => {
+            return next(new AppError(`can't find ${req.originalUrl} on this server`, 404))
+        })
+
+        this.app.use(globalErrorHandler)
     }
 
     // configuracion para la base de datos
