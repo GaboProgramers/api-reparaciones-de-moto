@@ -10,3 +10,13 @@ exports.validRole = catchAsync(async (req, res, next) => {
 
     next()
 })
+
+exports.validRoleUser = catchAsync(async (req, res, next) => {
+    const { sessionUser } = req
+
+    if (sessionUser.role !== 'client') {
+        return next(new AppError('Usted no puede modificar esta area', 404))
+    }
+
+    next()
+})

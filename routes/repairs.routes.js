@@ -23,23 +23,26 @@ router.post('/', createRepairs)
 router.use(protect)
 
 // ? Seccion para hacer las respectivas peticiones a nuestro servidor.
-router.get('/', validRole, findRepairs)
+router.get('/', validRole, protectAccountOwner, findRepairs)
 
 router.get('/:id',
     validRepairById,
     validRole,
+    protectAccountOwner,
     findRepairById
 )
 
 router.patch('/:id',
     validRepairById,
     validRole,
+    protectAccountOwner,
     updateRepairs
 )
 
 router.delete('/:id',
     validRepairById,
     validRole,
+    protectAccountOwner,
     deleteRepairs
 )
 
