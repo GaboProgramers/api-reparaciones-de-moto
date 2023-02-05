@@ -1,4 +1,6 @@
 const User = require("../models/user.model")
+const AppError = require("../utils/appError");
+const bcrypt = require("bcryptjs");
 const catchAsync = require("../utils/catchAsync")
 
 // ? Funcoin para Realizar una peticion GET
@@ -11,36 +13,19 @@ exports.findUsers = catchAsync(async (req, res, next) => {
 
     res.json({
         status: "succses",
-        message: "usuarios encontrados satisfactoriamente",
+        message: "Users successfully found",
         users
     })
 })
 
+// ? Funcion para obtener un usuario por su id.
 exports.findUser = catchAsync(async (req, res, next) => {
     const { user } = req
 
     res.status(200).json({
         status: 'success',
-        message: 'Usuario obtenido satisfactoriamente por el id',
+        message: 'User successfully obtained by his id',
         user
-    })
-})
-
-// ? Funcoin para Realizar una peticion POST
-exports.createUser = catchAsync(async (req, res, next) => {
-    const { name, email, password, role } = req.body
-
-    const newUser = await User.create({
-        name: name.toLowerCase(),
-        email: email.toLowerCase(),
-        password,
-        role: role.toLowerCase()
-    })
-
-    res.status(200).json({
-        status: "succses",
-        message: "Usuario creado con exito",
-        newUser
     })
 })
 
@@ -57,9 +42,40 @@ exports.updateUser = catchAsync(async (req, res, next) => {
 
     res.status(200).json({
         status: "succses",
-        message: "Usuario actualizado con exito",
+        message: "User updated successfully",
         updateUser
     })
+})
+
+// ? Funcion para actualizar la contraseña del usuario.
+exports.updatePassword = catchAsync(async (req, res, next) => {
+    const { user } = req
+    const { currentPassword, newPassword } = req.body
+
+    // ! 1. Mejorar en un middleware
+    const verifPassword = await bcrypt.compare(currentPassword, user.password)
+
+    if (!verifPassword) {
+        return next(new AppError('Incorrect password', 401))
+    }
+
+    if (currentPassword === newPassword) {
+        return next(new AppError('the current password cannot be the same as the new password', 401))
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const encriptedPassword = await bcrypt.hash(newPassword, salt);
+
+    await user.update({
+        password: encriptedPassword,
+        passwordChangeAt: new Date()
+    })
+
+    res.status(200).json({
+        status: 'sucsess',
+        message: 'The user password wa updated successfully'
+    })
+
 })
 
 // ? Funcoin para Realizar una peticion DELETE
@@ -70,7 +86,7 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
 
     res.status(200).json({
         status: "succses",
-        message: "el estado del usuario a sido actulizado a disable",
+        message: "The user status has changed to disable",
     })
 })
 

@@ -10,29 +10,29 @@ const User = db.define('user', {
     },
     name: {
         type: DataTypes.STRING,
-        allowNull: false,
-        unique: true
+        allowNull: false
     },
     email: {
         type: DataTypes.STRING,
-        allowNull: false,
-        unique: true
+        allowNull: false
     },
     password: {
         type: DataTypes.STRING,
         allowNull: false
     },
     role: {
-        type: DataTypes.STRING,
+        type: DataTypes.ENUM('client', 'employee'),
         allowNull: false,
-        defaultValue: 'client',
-        enum: ['client', 'employee']
+        defaultValue: 'client'
+    },
+    passwordChangeAt: {
+        type: DataTypes.DATE,
+        allowNull: true
     },
     status: {
-        type: DataTypes.STRING,
+        type: DataTypes.ENUM('available', 'disable'),
         allowNull: false,
-        defaultValue: 'available',
-        enum: ['avaliable', 'disable']
+        defaultValue: 'available'
     }
 });
 

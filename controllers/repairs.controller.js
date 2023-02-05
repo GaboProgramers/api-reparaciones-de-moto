@@ -46,7 +46,7 @@ exports.createRepairs = catchAsync(async (req, res, next) => {
 exports.updateRepairs = catchAsync(async (req, res, next) => {
     const { repair } = req
 
-    await repair.update({ status: 'completed' })
+    await repair.update({ status: 'complete' })
 
     res.json({
         status: "succses",

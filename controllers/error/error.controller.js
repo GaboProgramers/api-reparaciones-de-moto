@@ -5,6 +5,10 @@ const handleCatchError22P02 = err => {
     return new AppError(message, 400)
 }
 
+const handleJWTError = () => new AppError('invalid Token. Place login again!', 401)
+
+const handleJWTExpiredError = () => new AppError('Your token has expired! Place login again.', 401)
+
 const sendErrorDev = (err, res) => {
     res.status(err.statusCode).json({
         status: err.status,
@@ -41,7 +45,14 @@ const globalErrorHandler = (err, req, res, next) => {
 
     if (process.env.NODE_ENV === 'production') {
         let error = { ...err }
-        if (error.parent.code === '22P02') error = handleCatchError22P02(error)
+
+        if (!error.parent?.code) {
+            error = err
+        }
+
+        if (error.parent?.code === '22P02') error = handleCatchError22P02(error)
+        if (error.name === 'JsonWebTokenError') error = handleJWTError(error)
+        if (error.name === 'TokenExpiredError') error = handleJWTExpiredError(error)
 
         sendErrorProd(error, res)
     }

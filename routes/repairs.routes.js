@@ -10,22 +10,38 @@ const {
     deleteRepairs,
     findRepairById
 } = require("../controllers/repairs.controller")
+const { protect, protectAccountOwner } = require("../middleware/auth/auth.middleware")
 const { validRepairById } = require("../middleware/repair.middleware")
+const { validRole } = require("../middleware/validRole.middleware")
 
 // ? Generamos una instancia la cual vamos a igualar con Routes,
 // ? para el manejo de las rutas y sus respectivas peticiones.
 const router = Router()
 
-// ? Seccion para hacer las respectivas peticiones a nuestro servidor.
-router.get('/', findRepairs)
-
-router.get('/:id', validRepairById, findRepairById)
-
 router.post('/', createRepairs)
 
-router.patch('/:id', validRepairById, updateRepairs)
+router.use(protect)
 
-router.delete('/:id', validRepairById, deleteRepairs)
+// ? Seccion para hacer las respectivas peticiones a nuestro servidor.
+router.get('/', validRole, findRepairs)
+
+router.get('/:id',
+    validRepairById,
+    validRole,
+    findRepairById
+)
+
+router.patch('/:id',
+    validRepairById,
+    validRole,
+    updateRepairs
+)
+
+router.delete('/:id',
+    validRepairById,
+    validRole,
+    deleteRepairs
+)
 
 // ? Exportamos nuestro modulo, generando un nombre de variable,
 // ? a la cual le vamos a pasar como valor el nombre de la instacia que igualamos

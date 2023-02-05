@@ -6,12 +6,13 @@ const { check } = require("express-validator")
 // ? Proveniente de su ruta raiz.
 const {
     findUsers,
-    createUser,
     updateUser,
     deleteUser,
-    findUser
+    findUser,
+    updatePassword
 } = require("../controllers/users.controller")
-const { validUserById, validIfExistUserEmail } = require("../middleware/user.middleware")
+const { protect, protectAccountOwner } = require("../middleware/auth/auth.middleware")
+const { validUserById } = require("../middleware/user.middleware")
 const { validateFields } = require("../middleware/validateFild.middleware")
 
 // ? Generamos una instancia la cual vamos a igualar con Routes,
@@ -23,25 +24,26 @@ router.get('/', findUsers)
 
 router.get('/:id', validUserById, findUser)
 
-router.post('/', [
-    check('name', 'name require').not().isEmpty(),
-    check('email', 'email require').not().isEmpty(),
-    check('email', 'email must be a correct format').isEmail(),
-    check('password', 'the password must be mandatory').not().isEmpty(),
-    check('role', 'the role must be mandatory').not().isEmpty(),
-    validateFields,
-    validIfExistUserEmail
-], createUser)
+router.use(protect)
 
 router.patch('/:id', [
     check('name', 'name require').not().isEmpty(),
     check('email', 'email require').not().isEmpty(),
     check('email', 'email must be a correct format').isEmail(),
     validateFields,
-    validUserById
+    validUserById,
+    protectAccountOwner
 ], updateUser)
 
-router.delete('/:id', validUserById, deleteUser)
+router.patch('/password/:id', [
+    check('currentPassword', 'The current password must be mandatory').not().isEmpty(),
+    check('newPassword', 'The new password must be mandatory').not().isEmpty(),
+    validateFields,
+    validUserById,
+    protectAccountOwner
+], updatePassword)
+
+router.delete('/:id', validUserById, protectAccountOwner, deleteUser)
 
 // ? Exportamos nuestro modulo, generando un nombre de variable,
 // ? a la cual le vamos a pasar como valor el nombre de la instacia que igualamos

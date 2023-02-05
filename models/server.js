@@ -2,14 +2,15 @@
 const express = require("express")
 // ? Generamos la instancia para requerir las cors.
 const cors = require("cors")
+const morgan = require("morgan")
+const globalErrorHandler = require("../controllers/error/error.controller")
+const AppError = require("../utils/appError")
 // ? Generamos las instancias correspondientes para requerir
 // ? nuestros archivos de rutas desde su origen en el documento.
 const { userRouter } = require("../routes/user.routes")
 const { repairsRouter } = require("../routes/repairs.routes")
 const { db } = require("../database/db")
-const morgan = require("morgan")
-const globalErrorHandler = require("../controllers/error/error.controller")
-const AppError = require("../utils/appError")
+const { authRouter } = require("../routes/auth/auth.routes")
 
 // ? Declaramos una clase llamada servidor,
 // ? la cual va a obtener toda la configuracion necesaria para levantar nuestro servidor..
@@ -24,7 +25,8 @@ class Server {
         // ? Generamos los paths o rutas donde iremos almacenando la informacion de las peticiones.
         this.paths = {
             users: '/api/v1/users',
-            repairs: '/api/v1/repairs'
+            repairs: '/api/v1/repairs',
+            auth: '/api/v1/auth'
         }
 
         // ? llamada para el metodo de coneccion con la base de datos
@@ -50,6 +52,7 @@ class Server {
     routes() {
         this.app.use(this.paths.users, userRouter)
         this.app.use(this.paths.repairs, repairsRouter)
+        this.app.use(this.paths.auth, authRouter)
 
         this.app.all('*', (req, res, next) => {
             return next(new AppError(`can't find ${req.originalUrl} on this server`, 404))
@@ -66,13 +69,13 @@ class Server {
 
         db.sync()
             .then(() => console.log('Database synced'))
-            .catch(error => console.log(error));
+            .catch(error => console.log("aqui el error de sync => 🧨", error));
     }
 
     // ? Se genera el llamado a nuestro servidor.!
     listen() {
         this.app.listen(this.port, () => {
-            console.log('server is runniing on port', this.port);
+            console.log('server is running on port', this.port);
         })
     }
 }
