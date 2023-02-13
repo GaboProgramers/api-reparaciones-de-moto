@@ -1,12 +1,29 @@
 const Repair = require("../models/repair.model");
+const User = require("../models/user.model");
 const catchAsync = require("../utils/catchAsync");
 
 // ? Funcion para Realizar una peticion GET
 exports.findRepairs = catchAsync(async (req, res, next) => {
+
     const repair = await Repair.findAll({
+        attributes: ['id', 'date'],
         where: {
             status: 'pending'
-        }
+        },
+        include: [
+            {
+                model: User,
+                attributes: {
+                    exclude: [
+                        'createdAt',
+                        'updatedAt'
+                    ]
+                },
+                where: {
+                    status: 'available'
+                }
+            }
+        ]
     })
 
     res.status(200).json({

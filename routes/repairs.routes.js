@@ -10,9 +10,8 @@ const {
     deleteRepairs,
     findRepairById
 } = require("../controllers/repairs.controller")
-const { protect, protectAccountOwner } = require("../middleware/auth/auth.middleware")
+const { protect, protectAccountOwner, restrictTo } = require("../middleware/auth/auth.middleware")
 const { validRepairById } = require("../middleware/repair.middleware")
-const { validRole } = require("../middleware/validRole.middleware")
 
 // ? Generamos una instancia la cual vamos a igualar con Routes,
 // ? para el manejo de las rutas y sus respectivas peticiones.
@@ -23,26 +22,26 @@ router.post('/', createRepairs)
 router.use(protect)
 
 // ? Seccion para hacer las respectivas peticiones a nuestro servidor.
-router.get('/', validRole, protectAccountOwner, findRepairs)
+router.get('/',
+    restrictTo('employee'),
+    findRepairs
+)
 
 router.get('/:id',
     validRepairById,
-    validRole,
-    protectAccountOwner,
+    restrictTo('employee'),
     findRepairById
 )
 
 router.patch('/:id',
     validRepairById,
-    validRole,
-    protectAccountOwner,
+    restrictTo('employee'),
     updateRepairs
 )
 
 router.delete('/:id',
     validRepairById,
-    validRole,
-    protectAccountOwner,
+    restrictTo('employee'),
     deleteRepairs
 )
 

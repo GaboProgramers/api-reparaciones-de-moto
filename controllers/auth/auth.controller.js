@@ -67,4 +67,24 @@ exports.login = catchAsync(async (req, res, next) => {
     })
 })
 
+exports.renewToken = catchAsync(async (req, res, next) => {
+    const { id } = req.sessionUser
+
+    const token = await generateJWT(id)
+
+    const user = await User.findOne({
+        attributes: ['id', 'username', 'email', 'role'],
+        where: {
+            status: true,
+            id
+        }
+    })
+
+    return res.status(200).json({
+        status: 'sucsess',
+        token,
+        user
+    })
+})
+
 // ! Casi siempre sera de este modo la creacion de usuario

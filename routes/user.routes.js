@@ -14,7 +14,6 @@ const {
 const { protect, protectAccountOwner } = require("../middleware/auth/auth.middleware")
 const { validUserById } = require("../middleware/user.middleware")
 const { validateFields } = require("../middleware/validateFild.middleware")
-const { validRoleUser } = require("../middleware/validRole.middleware")
 
 // ? Generamos una instancia la cual vamos a igualar con Routes,
 // ? para el manejo de las rutas y sus respectivas peticiones.
@@ -33,7 +32,6 @@ router.patch('/:id', [
     check('email', 'email must be a correct format').isEmail(),
     validateFields,
     validUserById,
-    validRoleUser,
     protectAccountOwner
 ], updateUser)
 
@@ -42,11 +40,10 @@ router.patch('/password/:id', [
     check('newPassword', 'The new password must be mandatory').not().isEmpty(),
     validateFields,
     validUserById,
-    validRoleUser,
     protectAccountOwner
 ], updatePassword)
 
-router.delete('/:id', validUserById, validRoleUser, protectAccountOwner, deleteUser)
+router.delete('/:id', validUserById, protectAccountOwner, deleteUser)
 
 // ? Exportamos nuestro modulo, generando un nombre de variable,
 // ? a la cual le vamos a pasar como valor el nombre de la instacia que igualamos

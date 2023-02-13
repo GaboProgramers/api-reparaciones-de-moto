@@ -3,6 +3,11 @@ const express = require("express")
 // ? Generamos la instancia para requerir las cors.
 const cors = require("cors")
 const morgan = require("morgan")
+const helmet = require("helmet")
+const hpp = require("hpp")
+const rateLimit = require("express-rate-limit")
+const xss = require('xss-clean')
+
 const globalErrorHandler = require("../controllers/error/error.controller")
 const AppError = require("../utils/appError")
 // ? Generamos las instancias correspondientes para requerir
@@ -11,6 +16,7 @@ const { userRouter } = require("../routes/user.routes")
 const { repairsRouter } = require("../routes/repairs.routes")
 const { db } = require("../database/db")
 const { authRouter } = require("../routes/auth/auth.routes")
+const initModel = require("./init.model")
 
 // ? Declaramos una clase llamada servidor,
 // ? la cual va a obtener toda la configuracion necesaria para levantar nuestro servidor..
@@ -21,6 +27,13 @@ class Server {
         this.app = express()
         // ? declaramos el puerto donde se ejecutara nuestro servidor.
         this.port = process.env.PORT || 4000
+
+        // ? Limite de Peticiones
+        this.limiter = rateLimit({
+            max: 100,
+            windowMs: 60 * 60 * 1000,
+            message: 'Too many request from this IP, Place try again in an hour!.'
+        })
 
         // ? Generamos los paths o rutas donde iremos almacenando la informacion de las peticiones.
         this.paths = {
@@ -41,9 +54,18 @@ class Server {
 
     // ? colocamos los middlewares los cuales son configuraciones para muestro servidor
     middlewares() {
+        this.app.use(helmet())
+
+        this.app.use(xss())
+
+        this.app.use(hpp())
+
         if (process.env.NODE_ENV === 'development') {
             this.app.use(morgan('dev'))
         }
+
+        this.app.use('/api/v1', this.limiter)
+
         this.app.use(cors())
         this.app.use(express.json())
     }
@@ -66,6 +88,8 @@ class Server {
         db.authenticate()
             .then(() => console.log('Database authenticated'))
             .catch(error => console.log(error));
+
+        initModel()
 
         db.sync()
             .then(() => console.log('Database synced'))

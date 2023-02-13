@@ -6,6 +6,7 @@ const catchAsync = require("../utils/catchAsync")
 // ? Funcoin para Realizar una peticion GET
 exports.findUsers = catchAsync(async (req, res, next) => {
     const users = await User.findAll({
+        attributes: ['id', 'name', 'email', 'role'],
         where: {
             status: 'available'
         }

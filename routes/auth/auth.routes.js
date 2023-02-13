@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const { check } = require("express-validator");
-const { createUser, login } = require("../../controllers/auth/auth.controller");
+const { createUser, login, renewToken } = require("../../controllers/auth/auth.controller");
+const { protect } = require("../../middleware/auth/auth.middleware");
 const { validIfExistUserEmail } = require("../../middleware/user.middleware");
 const { validateFields } = require("../../middleware/validateFild.middleware");
 
@@ -21,6 +22,10 @@ router.post('/login', [
     check('password', 'The pasword must be mandatory').not().isEmpty(),
     validateFields
 ], login)
+
+router.use(protect)
+
+router.get('/renew', renewToken)
 
 module.exports = {
     authRouter: router
