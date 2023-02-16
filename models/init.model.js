@@ -3,7 +3,7 @@ const User = require("./user.model")
 
 const initModel = () => {
     User.hasMany(Repair)
-    Repair.hasOne(User)
+    Repair.belongsTo(User)
 }
 
 module.exports = initModel

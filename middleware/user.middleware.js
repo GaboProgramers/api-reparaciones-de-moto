@@ -29,6 +29,8 @@ exports.validIfExistUserEmail = catchAsync(async (req, res, next) => {
         }
     })
 
+    console.log(user);
+
     if (user && !user.status) {
         return next(new AppError('the user already has an account, but it is deactivated, contact the administrator', 400))
     }

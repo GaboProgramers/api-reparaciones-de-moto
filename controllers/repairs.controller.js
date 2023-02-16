@@ -6,24 +6,9 @@ const catchAsync = require("../utils/catchAsync");
 exports.findRepairs = catchAsync(async (req, res, next) => {
 
     const repair = await Repair.findAll({
-        attributes: ['id', 'date'],
         where: {
             status: 'pending'
-        },
-        include: [
-            {
-                model: User,
-                attributes: {
-                    exclude: [
-                        'createdAt',
-                        'updatedAt'
-                    ]
-                },
-                where: {
-                    status: 'available'
-                }
-            }
-        ]
+        }
     })
 
     res.status(200).json({
@@ -45,11 +30,13 @@ exports.findRepairById = catchAsync(async (req, res, next) => {
 
 // ? Funcion para Realizar una peticion POST
 exports.createRepairs = catchAsync(async (req, res, next) => {
-    const { date, userId } = req.body
+    const { date, userId, motorsNumber, description } = req.body
 
     const newRepair = await Repair.create({
         date,
-        userId
+        userId,
+        motorsNumber,
+        description
     })
 
     res.json({

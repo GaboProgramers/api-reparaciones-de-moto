@@ -1,15 +1,31 @@
 const User = require("../models/user.model")
 const AppError = require("../utils/appError");
 const bcrypt = require("bcryptjs");
-const catchAsync = require("../utils/catchAsync")
+const catchAsync = require("../utils/catchAsync");
+const Repair = require("../models/repair.model");
 
 // ? Funcoin para Realizar una peticion GET
 exports.findUsers = catchAsync(async (req, res, next) => {
+
     const users = await User.findAll({
         attributes: ['id', 'name', 'email', 'role'],
         where: {
             status: 'available'
-        }
+        },
+        include: [
+            {
+                model: Repair,
+                attributes: {
+                    exclude: [
+                        'createdAt',
+                        'updatedAt',
+                    ]
+                },
+                where: {
+                    status: 'pending'
+                }
+            }
+        ]
     })
 
     res.json({
@@ -26,7 +42,13 @@ exports.findUser = catchAsync(async (req, res, next) => {
     res.status(200).json({
         status: 'success',
         message: 'User successfully obtained by his id',
-        user
+        user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            status: user.status
+        }
     })
 })
 

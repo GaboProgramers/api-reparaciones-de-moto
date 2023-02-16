@@ -1,5 +1,6 @@
 // ? instanciamos el requerimiento a Router proveniente de express.
 const { Router } = require("express")
+const { check } = require("express-validator")
 
 // ? Instancia para obtener las Importaciones de Nuestro controlador,
 // ? Proveniente de su ruta raiz.
@@ -12,12 +13,18 @@ const {
 } = require("../controllers/repairs.controller")
 const { protect, protectAccountOwner, restrictTo } = require("../middleware/auth/auth.middleware")
 const { validRepairById } = require("../middleware/repair.middleware")
+const { validateFields } = require("../middleware/validateFild.middleware")
 
 // ? Generamos una instancia la cual vamos a igualar con Routes,
 // ? para el manejo de las rutas y sus respectivas peticiones.
 const router = Router()
 
-router.post('/', createRepairs)
+router.post('/', [
+    check('date', 'Date is Required').not().isEmpty(),
+    check('motorsNumber', 'motorsNumber is Required').not().isEmpty(),
+    check('description', 'description is Required').not().isEmpty(),
+    validateFields
+], createRepairs)
 
 router.use(protect)
 

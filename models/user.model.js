@@ -21,7 +21,9 @@ const User = db.define('user', {
         allowNull: false
     },
     role: {
-        type: DataTypes.ENUM('client', 'employee'),
+        type: DataTypes.ENUM({
+            values: ['client', 'employee']
+        }),
         allowNull: false,
         defaultValue: 'client'
     },
@@ -30,7 +32,9 @@ const User = db.define('user', {
         allowNull: true
     },
     status: {
-        type: DataTypes.ENUM('available', 'disable'),
+        type: DataTypes.ENUM({
+            values: ['available', 'disable']
+        }),
         allowNull: false,
         defaultValue: 'available'
     }
