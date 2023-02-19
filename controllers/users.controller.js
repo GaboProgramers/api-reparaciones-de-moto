@@ -39,6 +39,8 @@ exports.findUsers = catchAsync(async (req, res, next) => {
 exports.findUser = catchAsync(async (req, res, next) => {
     const { user } = req
 
+
+
     res.status(200).json({
         status: 'success',
         message: 'User successfully obtained by his id',
@@ -47,7 +49,8 @@ exports.findUser = catchAsync(async (req, res, next) => {
             name: user.name,
             email: user.email,
             role: user.role,
-            status: user.status
+            status: user.status,
+            repairs: user.repairs
         }
     })
 })

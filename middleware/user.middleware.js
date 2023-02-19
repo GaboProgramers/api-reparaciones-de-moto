@@ -1,3 +1,4 @@
+const Repair = require("../models/repair.model");
 const User = require("../models/user.model");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
@@ -9,7 +10,21 @@ exports.validUserById = catchAsync(async (req, res, next) => {
         where: {
             id,
             status: 'available'
-        }
+        },
+        include: [
+            {
+                model: Repair,
+                attributes: {
+                    exclude: [
+                        'createdAt',
+                        'updatedAt'
+                    ]
+                },
+                where: {
+                    status: 'pending'
+                }
+            }
+        ]
     })
 
     if (!user) {
