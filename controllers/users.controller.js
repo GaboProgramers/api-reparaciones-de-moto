@@ -8,24 +8,12 @@ const Repair = require("../models/repair.model");
 exports.findUsers = catchAsync(async (req, res, next) => {
 
     const users = await User.findAll({
-        attributes: ['id', 'name', 'email', 'role'],
+        attributes: {
+            exclude: ['createdAt', 'updatedAt', 'passwordChangeAt', 'password']
+        },
         where: {
             status: 'available'
-        },
-        include: [
-            {
-                model: Repair,
-                attributes: {
-                    exclude: [
-                        'createdAt',
-                        'updatedAt',
-                    ]
-                },
-                where: {
-                    status: 'pending'
-                }
-            }
-        ]
+        }
     })
 
     res.json({
@@ -38,8 +26,6 @@ exports.findUsers = catchAsync(async (req, res, next) => {
 // ? Funcion para obtener un usuario por su id.
 exports.findUser = catchAsync(async (req, res, next) => {
     const { user } = req
-
-
 
     res.status(200).json({
         status: 'success',

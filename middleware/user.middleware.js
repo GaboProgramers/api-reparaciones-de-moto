@@ -7,24 +7,13 @@ exports.validUserById = catchAsync(async (req, res, next) => {
     const { id } = req.params
 
     const user = await User.findOne({
+        attributes: {
+            exclude: ['createdAt', 'updatedAt', 'passwordChangeAt', 'password']
+        },
         where: {
             id,
             status: 'available'
-        },
-        include: [
-            {
-                model: Repair,
-                attributes: {
-                    exclude: [
-                        'createdAt',
-                        'updatedAt'
-                    ]
-                },
-                where: {
-                    status: 'pending'
-                }
-            }
-        ]
+        }
     })
 
     if (!user) {
